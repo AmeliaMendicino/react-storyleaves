@@ -1,0 +1,7 @@
+.card input {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+}

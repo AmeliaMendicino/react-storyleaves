@@ -5,8 +5,9 @@ class CardList extends Component {
   render() {
     return (
       <div>
-        Card List
-        <Card />
+        {this.props.cards.map(card =>
+          <Card key={card.id} {...card} updateCard={this.props.updateCard} />
+        )}
       </div>
     );
   }
