@@ -30,7 +30,7 @@ class CardForm extends Component {
           defaultValue={this.props.number}
           onBlur={event => {
             if (this.props.number !== Number(event.target.value)) {
-              this.props.moveCard(this.props.id, event.target.value);
+              this.props.moveCard(event.target.value);
             }
           }}
           onKeyDown={event => {
@@ -50,8 +50,7 @@ class CardForm extends Component {
           defaultValue={this.props.name}
           placeholder="Name"
           ref={input => (this.textInput = input)}
-          onChange={event =>
-            this.props.updateCard(this.props.id, event.target.value)}
+          onChange={event => this.props.updateCard(event.target.value)}
           onKeyDown={event => {
             if (event.keyCode === 13) {
               event.preventDefault();
