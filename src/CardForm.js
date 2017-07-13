@@ -2,25 +2,8 @@ import React, { Component } from 'react';
 import './Card.css';
 
 class CardForm extends Component {
-  constructor(props) {
-    super();
-
-    this.state = {
-      name: props.name,
-      type: props.type,
-      number: props.number
-    };
-
-    this.focus = this.focus.bind(this);
-  }
-
-  focus() {
-    // Explicitly focus the text input using the raw DOM API
-    this.textInput.focus();
-  }
-
   componentDidMount() {
-    this.focus();
+    this.textInput.focus();
   }
 
   render() {
