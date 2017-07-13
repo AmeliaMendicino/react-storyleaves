@@ -16,6 +16,7 @@ class CreateDeck extends Component {
         <CardList
           cards={this.state.cards}
           updateCard={this._updateCard.bind(this)}
+          moveCard={this._moveCard.bind(this)}
         />
         <DeckSaveForm deck={this.props.deck} />
       </div>
@@ -26,6 +27,13 @@ class CreateDeck extends Component {
     let card = this.state.cards.find(card => card.id === id);
     card.name = name;
     this.setState({ cards: this.state.cards });
+  }
+
+  _moveCard(id, newIndex) {
+    const cards = this.state.cards;
+    let oldIndex = cards.findIndex(card => card.id === id);
+    cards.splice(newIndex, 0, cards.splice(oldIndex, 1)[0]);
+    this.setState({ cards: cards });
   }
 
   // TOOD: Add in save deck/update deck
