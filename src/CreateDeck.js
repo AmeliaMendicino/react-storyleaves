@@ -29,9 +29,12 @@ class CreateDeck extends Component {
     this.setState({ cards: this.state.cards });
   }
 
-  _moveCard(id, newIndex) {
+  _moveCard(id, newPosition) {
     const cards = this.state.cards;
+
+    let newIndex = newPosition - 1;
     let oldIndex = cards.findIndex(card => card.id === id);
+
     cards.splice(newIndex, 0, cards.splice(oldIndex, 1)[0]);
     this.setState({ cards: cards });
   }

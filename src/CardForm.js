@@ -30,10 +30,18 @@ class CardForm extends Component {
           defaultValue={this.props.number}
           onBlur={event => {
             if (this.props.number !== Number(event.target.value)) {
-              console.log(this.props.number);
-              console.log(event.target.value);
-              console.log(event.relatedTarget);
-              //this.props.moveCard(this.props.id, event.target.value);
+              this.props.moveCard(this.props.id, event.target.value);
+            }
+          }}
+          onKeyDown={event => {
+            if (event.keyCode === 13) {
+              event.preventDefault();
+              if (this.props.number === Number(event.target.value)) {
+                this.props.toggleCard();
+              } else {
+                event.target.blur();
+                event.target.focus();
+              }
             }
           }}
           type="number"

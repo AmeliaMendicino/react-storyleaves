@@ -12,7 +12,8 @@ class CardList extends Component {
   render() {
     return (
       <div>
-        {this.props.cards.map(card => {
+        {this.props.cards.map((card, index) => {
+          card.number = index + 1;
           let CardComponent = Card;
           if (this.state.activeCard === card) {
             CardComponent = CardForm;
