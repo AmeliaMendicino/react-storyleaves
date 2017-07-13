@@ -5,3 +5,7 @@
   font-family: inherit;
   font-size: inherit;
 }
+
+.card input[type="number"] {
+  width: 3em;
+}
