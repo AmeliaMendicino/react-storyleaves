@@ -44,6 +44,11 @@ class CardForm extends Component {
         <select
           defaultValue={this.props.type}
           onChange={event => this.props.updateCardType(event.target.value)}
+          onKeyUp={event => {
+            if (event.keyCode === 13) {
+              this.props.toggleCard();
+            }
+          }}
         >
           {this.props.cardTypes.map((cardType, index) => {
             return (
