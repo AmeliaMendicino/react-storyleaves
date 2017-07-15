@@ -18,19 +18,18 @@ class CardList extends Component {
       <div>
         {this.state.cards.map((card, index) => {
           card.number = index + 1;
+
           let CardComponent = Card;
+          let props = { toggleCard: () => this._toggleActiveCard(card) };
+
           if (this.state.activeCard === card) {
             CardComponent = CardForm;
+            props.updateCard = name => (card.name = name);
+            props.moveCard = newPosition => this._moveCard(card, newPosition);
+            props.updateCardType = type => (card.type = type);
+            props.cardTypes = this.props.cardTypes;
           }
-          return (
-            <CardComponent
-              key={card.id}
-              {...card}
-              updateCard={name => (card.name = name)}
-              moveCard={newPosition => this._moveCard(card, newPosition)}
-              toggleCard={() => this._toggleActiveCard(card)}
-            />
-          );
+          return <CardComponent key={card.id} {...card} {...props} />;
         })}
       </div>
     );
