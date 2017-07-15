@@ -7,7 +7,10 @@ class CreateDeck extends Component {
   render() {
     return (
       <div>
-        <CardList cards={this.props.deck.cards} />
+        <CardList
+          cards={this.props.deck.cards}
+          cardTypes={this.props.deck.cardTypes}
+        />
         <DeckSaveForm deck={this.props.deck} />
       </div>
     );
