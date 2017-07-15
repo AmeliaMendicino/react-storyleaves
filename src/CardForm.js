@@ -52,7 +52,10 @@ class CardForm extends Component {
               </option>
             );
           })}
-        </select>
+        </select>{' '}
+        <button aria-label="Delete" onClick={this.props.deleteCard}>
+          X
+        </button>
       </div>
     );
   }

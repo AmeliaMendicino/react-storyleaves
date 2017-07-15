@@ -27,6 +27,7 @@ class CardList extends Component {
             props.updateCard = name => (card.name = name);
             props.moveCard = newPosition => this._moveCard(card, newPosition);
             props.updateCardType = type => (card.type = type);
+            props.deleteCard = () => this._deleteCard(card);
             props.cardTypes = this.props.cardTypes;
           }
           return <CardComponent key={card.id} {...card} {...props} />;
@@ -49,6 +50,13 @@ class CardList extends Component {
     let oldIndex = cards.indexOf(card);
 
     cards.splice(newIndex, 0, cards.splice(oldIndex, 1)[0]);
+    this.setState({ cards: cards });
+  }
+
+  _deleteCard(card) {
+    const cards = this.state.cards;
+    let index = cards.indexOf(card);
+    cards.splice(index, 1);
     this.setState({ cards: cards });
   }
 }
