@@ -30,8 +30,9 @@ class CardList extends Component {
             props.deleteCard = () => this._deleteCard(card);
             props.cardTypes = this.props.cardTypes;
           }
-          return <CardComponent key={card.id} {...card} {...props} />;
+          return <CardComponent key={card.number} {...card} {...props} />;
         })}
+        <button onClick={() => this._addCard()}>Add card</button>
       </div>
     );
   }
@@ -51,6 +52,12 @@ class CardList extends Component {
 
     cards.splice(newIndex, 0, cards.splice(oldIndex, 1)[0]);
     this.setState({ cards: cards });
+  }
+
+  _addCard() {
+    let card = { type: this.props.cardTypes[0] };
+    this.setState({ cards: this.state.cards.concat([card]) });
+    this._toggleActiveCard(card);
   }
 
   _deleteCard(card) {
