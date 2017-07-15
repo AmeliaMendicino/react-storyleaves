@@ -12,7 +12,7 @@ class StoryleavesGame extends Component {
     this.state = {
       actions: [],
       currentState: GameState.NEW_GAME,
-      deck: {}
+      deck: { cards: [] }
     };
   }
 
