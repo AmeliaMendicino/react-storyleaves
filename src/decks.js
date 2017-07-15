@@ -4,6 +4,7 @@ export const decks = [
     name: 'Fantasy',
     description: 'A generic fantasy deck for fairy tales and adventures.',
     reshuffles: 2,
+    cardTypes: ['Character', 'Aspect', 'Event', 'Item', 'Place', 'Detail'],
     cards: [
       {
         id: 1,
@@ -252,6 +253,7 @@ export const decks = [
     name: 'Anime Clichés',
     description: 'A clichéd deck to create your own anime/manga stories.',
     reshuffles: 2,
+    cardTypes: ['Character', 'Aspect', 'Event', 'Item', 'Place', 'Detail'],
     cards: [
       {
         id: 1,
