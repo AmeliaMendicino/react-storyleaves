@@ -41,7 +41,18 @@ class CardForm extends Component {
             }
           }}
         />
-        [{this.props.type}]
+        <select
+          defaultValue={this.props.type}
+          onChange={event => this.props.updateCardType(event.target.value)}
+        >
+          {this.props.cardTypes.map((cardType, index) => {
+            return (
+              <option key={index} value={cardType}>
+                {cardType}
+              </option>
+            );
+          })}
+        </select>
       </div>
     );
   }
