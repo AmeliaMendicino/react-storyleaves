@@ -34,11 +34,13 @@ class CreateDeck extends Component {
           moveCard={this._moveCard.bind(this)}
         />
         <DeckSaveForm deck={this.props.deck} />
-        <CardsInfo
-          cards={this.state.cards}
-          cardTypes={this.state.cardTypes}
-          updateCardTypes={this._updateCardTypes.bind(this)}
-        />
+        <div style={{ position: 'fixed', top: '1em', right: '1em' }}>
+          <CardsInfo
+            cards={this.state.cards}
+            cardTypes={this.state.cardTypes}
+            updateCardTypes={this._updateCardTypes.bind(this)}
+          />
+        </div>
       </div>
     );
   }

@@ -16,7 +16,9 @@ class CardsInfo extends Component {
           );
         })}
         <div>
-          Total: {total}
+          <strong>
+            Total: {total}
+          </strong>
         </div>
       </div>
     );
