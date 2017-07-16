@@ -7,12 +7,24 @@ class CardList extends Component {
     super();
 
     this.state = {
-      canEdit: true,
       activeCard: {}
     };
   }
 
   render() {
+    let addButton;
+    if (this.props.canEdit) {
+      addButton = (
+        <button
+          onClick={() => {
+            let card = this.props.addCard();
+            this._toggleActiveCard(card);
+          }}
+        >
+          Add card
+        </button>
+      );
+    }
     return (
       <div>
         {this.props.cards.map((card, index) => {
@@ -21,7 +33,7 @@ class CardList extends Component {
           let CardComponent = Card;
           let props = { toggleCard: () => this._toggleActiveCard(card) };
 
-          if (this.state.activeCard === card) {
+          if (this.props.canEdit && this.state.activeCard === card) {
             CardComponent = CardForm;
             props.updateCard = name => (card.name = name);
             props.moveCard = newPosition =>
@@ -33,14 +45,7 @@ class CardList extends Component {
           }
           return <CardComponent key={card.number} {...card} {...props} />;
         })}
-        <button
-          onClick={() => {
-            let card = this.props.addCard();
-            this._toggleActiveCard(card);
-          }}
-        >
-          Add card
-        </button>
+        {addButton}
       </div>
     );
   }

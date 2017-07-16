@@ -25,6 +25,7 @@ class CreateDeck extends Component {
     return (
       <div>
         <CardList
+          canEdit={true}
           cards={this.state.cards}
           cardTypes={this.state.cardTypes}
           updateCardType={this._updateCardType.bind(this)}
