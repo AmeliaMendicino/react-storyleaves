@@ -29,12 +29,17 @@ class CreateDeck extends Component {
           canEdit={true}
           cards={this.state.deck.cards}
           cardTypes={this.state.deck.cardTypes}
+          updateCardName={this._updateCardName.bind(this)}
           updateCardType={this._updateCardType.bind(this)}
           addCard={this._addCard.bind(this)}
           deleteCard={this._deleteCard.bind(this)}
           moveCard={this._moveCard.bind(this)}
         />
-        <DeckSaveForm deck={this.props.deck} />
+        <DeckSaveForm
+          deck={this.props.deck}
+          updateDeckName={this._updateDeckName.bind(this)}
+          updateDeckDescription={this._updateDeckDescription.bind(this)}
+        />
         <div style={{ position: 'fixed', top: '1em', right: '1em' }}>
           <CardsInfo
             cards={this.state.deck.cards}
@@ -44,6 +49,11 @@ class CreateDeck extends Component {
         </div>
       </div>
     );
+  }
+
+  _updateCardName(card, name) {
+    card.name = name;
+    this.setState({ deck: this.state.deck });
   }
 
   _updateCardType(card, type) {
@@ -82,7 +92,13 @@ class CreateDeck extends Component {
     this.setState({ deck: { ...this.state.deck, cardTypes: types } });
   }
 
-  // TOOD: Add in save deck/update deck
+  _updateDeckName(name) {
+    this.setState({ deck: { ...this.state.deck, name } });
+  }
+
+  _updateDeckDescription(description) {
+    this.setState({ deck: { ...this.state.deck, description } });
+  }
 }
 
 export default CreateDeck;

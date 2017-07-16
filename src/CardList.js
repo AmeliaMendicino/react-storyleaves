@@ -35,7 +35,7 @@ class CardList extends Component {
 
           if (this.props.canEdit && this.state.activeCard === card) {
             CardComponent = CardForm;
-            props.updateCard = name => (card.name = name);
+            props.updateCard = name => this.props.updateCardName(card, name);
             props.moveCard = newPosition =>
               this.props.moveCard(card, newPosition);
             props.updateCardType = type =>
