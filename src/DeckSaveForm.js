@@ -4,12 +4,20 @@ import {
   FormGroup,
   Col,
   FormControl,
-  Button,
   ControlLabel
 } from 'react-bootstrap';
 //import { GameState } from "./GameState";
 
 class DeckSaveForm extends Component {
+  constructor(props) {
+    super();
+
+    this.state = {
+      name: props.deck.name || '',
+      description: props.deck.description || ''
+    };
+  }
+
   render() {
     return (
       <Form horizontal>
@@ -21,10 +29,8 @@ class DeckSaveForm extends Component {
             <FormControl
               type="text"
               placeholder="Name"
-              defaultValue={this.props.deck.name}
-              inputRef={ref => {
-                this.props.deck.name = ref;
-              }}
+              value={this.state.name}
+              onChange={this._updateName.bind(this)}
             />
           </Col>
         </FormGroup>
@@ -37,21 +43,25 @@ class DeckSaveForm extends Component {
             <FormControl
               componentClass="textarea"
               placeholder="Description"
-              defaultValue={this.props.deck.description}
-              inputRef={ref => {
-                this.props.deck.description = ref;
-              }}
+              value={this.state.description}
+              onChange={this._updateDescription.bind(this)}
             />
-          </Col>
-        </FormGroup>
-
-        <FormGroup>
-          <Col smOffset={2} sm={10}>
-            <Button type="submit">Start Game</Button>
           </Col>
         </FormGroup>
       </Form>
     );
+  }
+
+  _updateName(event) {
+    let name = event.target.value;
+    this.setState({ name });
+    this.props.updateDeckName(name);
+  }
+
+  _updateDescription(event) {
+    let description = event.target.value;
+    this.setState({ description });
+    this.props.updateDeckDescription(description);
   }
 
   // TOOD: Add in save deck/update deck
