@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-class DeckInfo extends Component {
+class CardsInfo extends Component {
   render() {
-    const types = this.props.deck.cardTypes;
-    let total = this.props.deck.cards.length;
+    const types = this.props.cardTypes;
+    let total = this.props.cards.length;
 
     return (
       <div>
@@ -11,7 +11,7 @@ class DeckInfo extends Component {
           return (
             <div key={index}>
               {type}:{' '}
-              {this.props.deck.cards.filter(card => card.type === type).length}
+              {this.props.cards.filter(card => card.type === type).length}
             </div>
           );
         })}
@@ -23,4 +23,4 @@ class DeckInfo extends Component {
   }
 }
 
-export default DeckInfo;
+export default CardsInfo;
