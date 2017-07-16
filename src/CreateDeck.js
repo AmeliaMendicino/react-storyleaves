@@ -15,10 +15,11 @@ class CreateDeck extends Component {
       'Place',
       'Detail'
     ];
-    let cardTypes = props.deck.cardTypes || defaultCardTypes;
+    props.deck.cardTypes = props.deck.cardTypes || defaultCardTypes;
 
-    props.deck.cardTypes = cardTypes;
-    this.state = { cards: props.deck.cards, cardTypes };
+    this.state = {
+      deck: props.deck
+    };
   }
 
   render() {
@@ -26,8 +27,8 @@ class CreateDeck extends Component {
       <div>
         <CardList
           canEdit={true}
-          cards={this.state.cards}
-          cardTypes={this.state.cardTypes}
+          cards={this.state.deck.cards}
+          cardTypes={this.state.deck.cardTypes}
           updateCardType={this._updateCardType.bind(this)}
           addCard={this._addCard.bind(this)}
           deleteCard={this._deleteCard.bind(this)}
@@ -36,8 +37,8 @@ class CreateDeck extends Component {
         <DeckSaveForm deck={this.props.deck} />
         <div style={{ position: 'fixed', top: '1em', right: '1em' }}>
           <CardsInfo
-            cards={this.state.cards}
-            cardTypes={this.state.cardTypes}
+            cards={this.state.deck.cards}
+            cardTypes={this.state.deck.cardTypes}
             updateCardTypes={this._updateCardTypes.bind(this)}
           />
         </div>
@@ -47,35 +48,38 @@ class CreateDeck extends Component {
 
   _updateCardType(card, type) {
     card.type = type;
-    this.setState({ cards: this.state.cards });
+    this.setState({ deck: this.state.deck });
   }
 
   _addCard() {
-    let card = { type: this.state.cardTypes[0] };
-    this.setState({ cards: this.state.cards.concat([card]) });
+    let card = { type: this.state.deck.cardTypes[0] };
+    this.setState({
+      deck: { ...this.state.deck, cards: this.state.deck.cards.concat([card]) }
+    });
     return card;
   }
 
   _deleteCard(card) {
-    const cards = this.state.cards;
+    const cards = [...this.state.deck.cards];
     let index = cards.indexOf(card);
-    cards.splice(index, 1);
-    this.setState({ cards: cards });
+    this.setState({
+      deck: { ...this.state.deck, cards: cards.splice(index, 1) }
+    });
   }
 
   _moveCard(card, newPosition) {
-    const cards = this.state.cards;
+    const cards = [...this.state.deck.cards];
 
     let newIndex = newPosition - 1;
     let oldIndex = cards.indexOf(card);
 
     cards.splice(newIndex, 0, cards.splice(oldIndex, 1)[0]);
-    this.setState({ cards: cards });
+
+    this.setState({ deck: { ...this.state.deck, cards: cards } });
   }
 
   _updateCardTypes(types) {
-    this.props.deck.cardTypes = types;
-    this.setState({ cardTypes: types });
+    this.setState({ deck: { ...this.state.deck, cardTypes: types } });
   }
 
   // TOOD: Add in save deck/update deck
