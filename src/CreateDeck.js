@@ -47,8 +47,37 @@ class CreateDeck extends Component {
             updateCardTypes={this._updateCardTypes.bind(this)}
           />
         </div>
+        <button onClick={this._saveDeck.bind(this)}>Save</button>
       </div>
     );
+  }
+
+  _saveDeck() {
+    // Decks must have at least 9 cards with 5 characters for normal-esque play
+    let defaultRules = {
+      minCards: 9,
+      requiredCards: [{ type: this.state.deck.cardTypes[0], count: 5 }]
+    };
+    let rules = this.props.rules || defaultRules;
+
+    if (rules.minCards && this.state.deck.cards.length < rules.minCards) {
+      alert(`You must have at least ${rules.minCards} card(s)`);
+      return;
+    }
+
+    if (rules.requiredCards) {
+      for (let requirement of rules.requiredCards) {
+        if (
+          this.state.deck.cards.filter(card => card.type === requirement.type)
+            .length < requirement.count
+        ) {
+          alert(
+            `You must have at least ${requirement.count} ${requirement.type} card(s)`
+          );
+          return;
+        }
+      }
+    }
   }
 
   _updateCardName(card, name) {
