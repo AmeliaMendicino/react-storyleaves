@@ -101,8 +101,9 @@ class CreateDeck extends Component {
   _deleteCard(card) {
     const cards = [...this.state.deck.cards];
     let index = cards.indexOf(card);
+    cards.splice(index, 1);
     this.setState({
-      deck: { ...this.state.deck, cards: cards.splice(index, 1) }
+      deck: { ...this.state.deck, cards: cards }
     });
   }
 
