@@ -36,9 +36,10 @@ class CreateDeck extends Component {
           moveCard={this._moveCard.bind(this)}
         />
         <DeckSaveForm
-          deck={this.props.deck}
+          deck={this.state.deck}
           updateDeckName={this._updateDeckName.bind(this)}
           updateDeckDescription={this._updateDeckDescription.bind(this)}
+          updateReshuffles={this._updateReshuffles.bind(this)}
         />
         <div style={{ position: 'fixed', top: '1em', right: '1em' }}>
           <CardsInfo
@@ -128,6 +129,14 @@ class CreateDeck extends Component {
 
   _updateCardTypes(types) {
     this.setState({ deck: { ...this.state.deck, cardTypes: types } });
+  }
+
+  _updateReshuffles(number) {
+    let reshuffles = this.state.deck.reshuffles + number;
+    if (reshuffles < 0) {
+      reshuffles = 0;
+    }
+    this.setState({ deck: { ...this.state.deck, reshuffles } });
   }
 
   _updateDeckName(name) {

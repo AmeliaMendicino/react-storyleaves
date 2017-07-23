@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  Button,
   Form,
   FormGroup,
   Col,
@@ -48,6 +49,17 @@ class DeckSaveForm extends Component {
             />
           </Col>
         </FormGroup>
+
+        <div>
+          Reshuffles:
+          <Button onClick={() => this.props.updateReshuffles(-1)}>
+            <span className="glyphicon glyphicon-minus" aria-label="minus" />
+          </Button>
+          {` ${this.props.deck.reshuffles} `}
+          <Button onClick={() => this.props.updateReshuffles(1)}>
+            <span className="glyphicon glyphicon-plus" aria-label="add" />
+          </Button>
+        </div>
       </Form>
     );
   }
