@@ -78,6 +78,14 @@ class CreateDeck extends Component {
         }
       }
     }
+
+    if (!this.state.deck.name) {
+      alert('Please input deck name');
+    }
+
+    if (!this.state.deck.description) {
+      alert('Please input deck description');
+    }
   }
 
   _updateCardName(card, name) {
