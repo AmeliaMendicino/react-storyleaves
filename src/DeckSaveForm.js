@@ -25,7 +25,7 @@ class DeckSaveForm extends Component {
     const popoverHoverFocus = (
       <Popover id="popover-positioned-top" title="Reshuffle Info">
         1 Reshuffle per 18 Cards Recommend.<br />
-        Suggested: {Math.trunc(this.props.deck.cards.length / 18)}
+        Suggested: {Math.trunc(this.props.deck.cards.length / 18) || 1}
       </Popover>
     );
 

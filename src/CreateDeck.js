@@ -16,7 +16,7 @@ class CreateDeck extends Component {
       'Detail'
     ];
     props.deck.cardTypes = props.deck.cardTypes || defaultCardTypes;
-    props.deck.reshuffles = props.deck.reshuffles || 0;
+    props.deck.reshuffles = props.deck.reshuffles || 1;
 
     this.state = {
       deck: props.deck
