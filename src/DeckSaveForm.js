@@ -91,8 +91,6 @@ class DeckSaveForm extends Component {
     this.setState({ description });
     this.props.updateDeckDescription(description);
   }
-
-  // TOOD: Add in save deck/update deck
 }
 
 export default DeckSaveForm;

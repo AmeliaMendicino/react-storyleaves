@@ -53,7 +53,10 @@ class CreateDeck extends Component {
     );
   }
 
-  _saveDeck() {
+  _isDeckValid() {
+    let isValid = true;
+    let errors = [];
+
     // Decks must have at least 9 cards with 5 characters for normal-esque play
     let defaultRules = {
       minCards: 9,
@@ -62,8 +65,8 @@ class CreateDeck extends Component {
     let rules = this.props.rules || defaultRules;
 
     if (rules.minCards && this.state.deck.cards.length < rules.minCards) {
-      alert(`You must have at least ${rules.minCards} card(s)`);
-      return;
+      errors.push(`You must have at least ${rules.minCards} card(s)`);
+      isValid = false;
     }
 
     if (rules.requiredCards) {
@@ -72,20 +75,32 @@ class CreateDeck extends Component {
           this.state.deck.cards.filter(card => card.type === requirement.type)
             .length < requirement.count
         ) {
-          alert(
+          errors.push(
             `You must have at least ${requirement.count} ${requirement.type} card(s)`
           );
-          return;
+          isValid = false;
         }
       }
     }
 
     if (!this.state.deck.name) {
-      alert('Please input deck name');
+      errors.push('Please input deck name');
+      isValid = false;
     }
 
     if (!this.state.deck.description) {
-      alert('Please input deck description');
+      errors.push('Please input deck description');
+      isValid = false;
+    }
+
+    return { isValid, errors };
+  }
+
+  _saveDeck() {
+    let { isValid, errors } = this._isDeckValid();
+    if (!isValid) {
+      alert(errors.join('\n'));
+      return;
     }
   }
 
