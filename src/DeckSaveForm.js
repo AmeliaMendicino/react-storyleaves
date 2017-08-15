@@ -30,7 +30,7 @@ class DeckSaveForm extends Component {
     );
 
     return (
-      <Form horizontal>
+      <Form horizontal onSubmit={event => event.preventDefault()}>
         <FormGroup controlId="formHorizontalDeckName">
           <Col componentClass={ControlLabel} sm={2}>
             Deck Name
