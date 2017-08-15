@@ -4,6 +4,7 @@ import DeckStartChoice from './DeckStartChoice';
 import DeckList from './DeckList';
 import CreateDeck from './CreateDeck';
 import StoryleavesSetup from './StoryleavesSetup';
+import { decks } from './decks';
 
 class StoryleavesGame extends Component {
   constructor() {
@@ -23,6 +24,7 @@ class StoryleavesGame extends Component {
     switch (this.state.currentState) {
       case GameState.PICK_DECK:
         CurrentComponent = DeckList;
+        props.decks = decks;
         props.setDeck = this._setDeck.bind(this);
         break;
       case GameState.CREATE_DECK:

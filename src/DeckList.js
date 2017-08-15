@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import { GameState } from './GameState';
-import { decks } from './decks';
 
 class DeckList extends Component {
   render() {
     return (
       <ListGroup>
-        {decks.map(deck =>
+        {this.props.decks.map(deck =>
           <ListGroupItem
             onClick={() => {
               this.props.setDeck(deck);
