@@ -10,10 +10,19 @@ class StoryleavesGame extends Component {
   constructor() {
     super();
 
+    // Initialize the decks
+    let allDecks = decks;
+    let savedDecks = localStorage.getItem('decks');
+    if (savedDecks && savedDecks !== 'undefined') {
+      allDecks = JSON.parse(savedDecks);
+    } else {
+      localStorage.setItem('decks', JSON.stringify(allDecks));
+    }
+
     this.state = {
       actions: [],
       currentState: GameState.NEW_GAME,
-      decks: decks,
+      decks: allDecks,
       deck: { cards: [] }
     };
   }
@@ -31,7 +40,8 @@ class StoryleavesGame extends Component {
       case GameState.CREATE_DECK:
         CurrentComponent = CreateDeck;
         props.deck = this.state.deck;
-        props.deckExists = this._deckExists.bind(this);
+        props.getDeck = this._getDeck.bind(this);
+        props.saveDeck = this._saveDeck.bind(this);
         break;
       case GameState.SETUP:
         CurrentComponent = StoryleavesSetup;
@@ -57,9 +67,24 @@ class StoryleavesGame extends Component {
     this.setState({ deck: deck });
   }
 
-  _deckExists(deck) {
+  _getDeck(deck) {
     // Check if the deck name is already taken. Maybe in the future we'll check author, too?
-    return this.state.decks.filter(d => d.name === deck.name).length > 0;
+    return this.state.decks.find(d => d.name === deck.name);
+  }
+
+  _saveDeck(deck) {
+    // Determine if we're overwriting a current deck
+    const decks = [...this.state.decks];
+    let index = decks.findIndex(savedDeck => savedDeck.name === deck.name);
+    if (index !== -1) {
+      decks.splice(index, 1);
+    }
+    decks.push(deck);
+
+    // Update the local storage
+    localStorage.setItem('decks', JSON.stringify(decks));
+    this.setState({ decks });
+    this._setDeck(deck);
   }
 }
 
