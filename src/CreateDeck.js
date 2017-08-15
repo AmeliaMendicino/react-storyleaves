@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import DeckSaveForm from './DeckSaveForm';
 import CardList from './CardList';
 import CardsInfo from './CardsInfo';
-//import { GameState } from "./GameState";
+import { GameState } from './GameState';
 
 class CreateDeck extends Component {
   constructor(props) {
@@ -97,6 +97,10 @@ class CreateDeck extends Component {
     return { isValid, errors };
   }
 
+  _jsonEqual(a, b) {
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
+
   _saveDeck() {
     let { isValid, errors } = this._isDeckValid();
     if (!isValid) {
@@ -105,7 +109,8 @@ class CreateDeck extends Component {
     }
 
     // Check if the Deck Name is already taken
-    if (this.props.deckExists(this.state.deck)) {
+    let existingDeck = this.props.getDeck(this.state.deck);
+    if (existingDeck && !this._jsonEqual(this.state.deck, existingDeck)) {
       // Verify that the user wants to save over the old one
       if (
         !window.confirm(
@@ -118,6 +123,8 @@ class CreateDeck extends Component {
     }
 
     // Save the deck
+    this.props.saveDeck(this.state.deck);
+    this.props.changeGameState(GameState.SETUP);
   }
 
   _updateCardName(card, name) {
