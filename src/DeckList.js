@@ -6,13 +6,13 @@ class DeckList extends Component {
   render() {
     return (
       <ListGroup>
-        {this.props.decks.map(deck =>
+        {this.props.decks.map((deck, index) =>
           <ListGroupItem
             onClick={() => {
               this.props.setDeck(deck);
               this.props.changeGameState(GameState.CREATE_DECK);
             }}
-            key={deck.id}
+            key={index}
             header={deck.name}
           >
             {deck.description}
