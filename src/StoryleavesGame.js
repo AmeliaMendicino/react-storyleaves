@@ -13,6 +13,7 @@ class StoryleavesGame extends Component {
     this.state = {
       actions: [],
       currentState: GameState.NEW_GAME,
+      decks: decks,
       deck: { cards: [] }
     };
   }
@@ -24,12 +25,13 @@ class StoryleavesGame extends Component {
     switch (this.state.currentState) {
       case GameState.PICK_DECK:
         CurrentComponent = DeckList;
-        props.decks = decks;
+        props.decks = this.state.decks;
         props.setDeck = this._setDeck.bind(this);
         break;
       case GameState.CREATE_DECK:
         CurrentComponent = CreateDeck;
         props.deck = this.state.deck;
+        props.deckExists = this._deckExists.bind(this);
         break;
       case GameState.SETUP:
         CurrentComponent = StoryleavesSetup;
@@ -53,6 +55,11 @@ class StoryleavesGame extends Component {
 
   _setDeck(deck) {
     this.setState({ deck: deck });
+  }
+
+  _deckExists(deck) {
+    // Check if the deck name is already taken. Maybe in the future we'll check author, too?
+    return this.state.decks.filter(d => d.name === deck.name).length > 0;
   }
 }
 

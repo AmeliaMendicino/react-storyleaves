@@ -103,6 +103,21 @@ class CreateDeck extends Component {
       alert(errors.join('\n'));
       return;
     }
+
+    // Check if the Deck Name is already taken
+    if (this.props.deckExists(this.state.deck)) {
+      // Verify that the user wants to save over the old one
+      if (
+        !window.confirm(
+          `The deck "${this.state.deck
+            .name}" already exists. Do you want to save over it?`
+        )
+      ) {
+        return;
+      }
+    }
+
+    // Save the deck
   }
 
   _updateCardName(card, name) {
