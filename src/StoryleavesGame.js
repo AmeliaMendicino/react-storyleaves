@@ -46,7 +46,6 @@ class StoryleavesGame extends Component {
       case GameState.SETUP:
         CurrentComponent = StoryleavesSetup;
         props.deck = this.state.deck;
-        props.shuffleDeck = this._shuffleDeck.bind(this);
         break;
       case GameState.NEW_GAME:
       default:
@@ -87,17 +86,6 @@ class StoryleavesGame extends Component {
     localStorage.setItem('decks', JSON.stringify(decks));
     this.setState({ decks });
     this._setDeck(deck);
-  }
-
-  _shuffleDeck() {
-    let shuffled = [...this.state.deck.cards];
-
-    for (let i = shuffled.length; i; i--) {
-      let rand = Math.floor(Math.random() * i);
-      [shuffled[i - 1], shuffled[rand]] = [shuffled[rand], shuffled[i - 1]];
-    }
-
-    this.setState({ deck: { ...this.state.deck, cards: shuffled } });
   }
 }
 
