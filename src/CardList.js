@@ -28,7 +28,9 @@ class CardList extends Component {
     return (
       <div>
         {this.props.cards.map((card, index) => {
-          card.number = index + 1;
+          if (this.props.canEdit) {
+            card.number = index + 1;
+          }
 
           let CardComponent = Card;
           let props = { toggleCard: () => this._toggleActiveCard(card) };
