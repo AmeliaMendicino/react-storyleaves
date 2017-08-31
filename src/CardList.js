@@ -33,7 +33,7 @@ class CardList extends Component {
           }
 
           let CardComponent = Card;
-          let props = { toggleCard: () => this._toggleActiveCard(card) };
+          let props = { cardAction: () => this._toggleActiveCard(card) };
 
           if (this.props.canEdit && this.state.activeCard === card) {
             CardComponent = CardForm;

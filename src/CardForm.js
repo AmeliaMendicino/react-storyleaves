@@ -7,20 +7,32 @@ class CardForm extends Component {
   }
 
   render() {
+    const {
+      number,
+      name,
+      type,
+      cardTypes,
+      updateCard,
+      updateCardType,
+      moveCard,
+      deleteCard,
+      cardAction
+    } = this.props;
+    const toggleCard = cardAction;
     return (
       <div className="card">
         <input
-          defaultValue={this.props.number}
+          defaultValue={number}
           onBlur={event => {
-            if (this.props.number !== Number(event.target.value)) {
-              this.props.moveCard(event.target.value);
+            if (number !== Number(event.target.value)) {
+              moveCard(event.target.value);
             }
           }}
           onKeyDown={event => {
             if (event.keyCode === 13) {
               event.preventDefault();
-              if (this.props.number === Number(event.target.value)) {
-                this.props.toggleCard();
+              if (number === Number(event.target.value)) {
+                toggleCard();
               } else {
                 event.target.blur();
                 event.target.focus();
@@ -30,27 +42,27 @@ class CardForm extends Component {
           type="number"
         />
         <input
-          defaultValue={this.props.name}
+          defaultValue={name}
           placeholder="Name"
           ref={input => (this.textInput = input)}
-          onChange={event => this.props.updateCard(event.target.value)}
+          onChange={event => updateCard(event.target.value)}
           onKeyDown={event => {
             if (event.keyCode === 13) {
               event.preventDefault();
-              this.props.toggleCard();
+              toggleCard();
             }
           }}
         />
         <select
-          defaultValue={this.props.type}
-          onChange={event => this.props.updateCardType(event.target.value)}
+          defaultValue={type}
+          onChange={event => updateCardType(event.target.value)}
           onKeyUp={event => {
             if (event.keyCode === 13) {
-              this.props.toggleCard();
+              toggleCard();
             }
           }}
         >
-          {this.props.cardTypes.map((cardType, index) => {
+          {cardTypes.map((cardType, index) => {
             return (
               <option key={index} value={cardType}>
                 {cardType}
@@ -58,11 +70,7 @@ class CardForm extends Component {
             );
           })}
         </select>{' '}
-        <button
-          aria-label="Delete"
-          onClick={this.props.deleteCard}
-          tabIndex="-1"
-        >
+        <button aria-label="Delete" onClick={deleteCard} tabIndex="-1">
           X
         </button>
       </div>
