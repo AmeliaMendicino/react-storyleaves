@@ -1,13 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class Card extends Component {
-  render() {
-    return (
-      <div className="card" onClick={this.props.toggleCard}>
-        {this.props.number}. {this.props.name} [{this.props.type}]
-      </div>
-    );
-  }
-}
+const Card = ({ cardAction, number, name, type }) => {
+  return (
+    <div className="card" onClick={cardAction}>
+      {number}. {name} [{type}]
+    </div>
+  );
+};
 
 export default Card;
