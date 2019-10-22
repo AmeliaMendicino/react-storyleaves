@@ -4,13 +4,14 @@
     "project": "./tsconfig.json"
   },
   "extends": [
-  	"react-app",
-  	"airbnb",
-  	"prettier/@typescript-eslint",
-  	"plugin:prettier/recommended",
-  	"plugin:@typescript-eslint/eslint-recommended",
-  	"plugin:@typescript-eslint/recommended",
-  	"plugin:@typescript-eslint/recommended-requiring-type-checking"
+    "react-app",
+    "airbnb",
+    "prettier/@typescript-eslint",
+    "plugin:prettier/recommended",
+    "plugin:import/typescript",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
   ],
   "plugins": ["react","prettier","@typescript-eslint","import","react-hooks","jsx-a11y"],
   "rules": {
