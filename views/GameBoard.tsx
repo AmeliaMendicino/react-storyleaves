@@ -32,9 +32,9 @@ export default function GameBoard(): JSX.Element {
       <PanResponderExample left={58} top={78} color="green" />
       <PanResponderExample left={68} top={88} color="blue" />
       <PanResponderExample left={78} top={98} color="pink" />
-      <Text>Hello, Storyleaves! Testing GameBoard PRO</Text>
+      <Text>Hello, Storyleaves! Testing StoryTextInput Typescript</Text>
       <Separator />
-      <StoryTextInput />
+      <StoryTextInput id="storyText" />
       <Separator />
       <Button title="Clear" onPress={(): Promise<void> => AsyncStorage.removeItem(saveKey)} />
     </View>
