@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { PanResponder, StyleSheet, View } from 'react-native';
+import withSave, { InjectedSaveProps } from './withSave';
 
 const CIRCLE_SIZE = 80;
 
@@ -15,13 +16,13 @@ const styles = StyleSheet.create({
   },
 });
 
-interface PanResponderExampleProps {
+interface PanResponderExampleProps extends InjectedSaveProps {
   left: number;
   top: number;
   color: string;
 }
 
-export default class PanResponderExample extends PureComponent<PanResponderExampleProps> {
+export class PanResponderExample extends PureComponent<PanResponderExampleProps> {
   circleStyles = {
     style: {
       backgroundColor: '',
@@ -38,8 +39,15 @@ export default class PanResponderExample extends PureComponent<PanResponderExamp
 
   constructor(props) {
     super(props);
-    this.previousLeft = props.left;
-    this.previousTop = props.top;
+
+    if (props.data) {
+      const [savedLeft, savedTop] = props.data.split(':');
+      this.previousLeft = parseFloat(savedLeft);
+      this.previousTop = parseFloat(savedTop);
+    } else {
+      this.previousLeft = props.left;
+      this.previousTop = props.top;
+    }
     this.circleStyles = {
       style: {
         backgroundColor: props.color,
@@ -79,22 +87,25 @@ export default class PanResponderExample extends PureComponent<PanResponderExamp
     this.previousTop += gestureState.dy;
   };
 
-  highlight(): void {
+  highlight = (): void => {
     this.circleStyles.style.backgroundColor = 'grey';
     this.updateNativeStyles();
-  }
+  };
 
-  unHighlight(): void {
+  unHighlight = (): void => {
     const { color } = this.props;
     this.circleStyles.style.backgroundColor = color;
     this.updateNativeStyles();
-  }
+  };
 
-  updateNativeStyles(): void {
+  updateNativeStyles = (): void => {
     if (this.circle) {
       this.circle.setNativeProps(this.circleStyles);
+
+      const { setSaveData } = this.props;
+      setSaveData(`${this.circleStyles.style.left}:${this.circleStyles.style.top}`);
     }
-  }
+  };
 
   /* eslint react/sort-comp: 0 */
   panResponder = PanResponder.create({
@@ -118,3 +129,5 @@ export default class PanResponderExample extends PureComponent<PanResponderExamp
     );
   }
 }
+
+export default withSave()(PanResponderExample);

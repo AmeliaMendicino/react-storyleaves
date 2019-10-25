@@ -5,6 +5,7 @@ import { Subtract } from 'utility-types';
 export interface InjectedSaveProps {
   data: string;
   handleChange: (data: string) => void;
+  setSaveData?: (data: string) => void;
 }
 
 interface WithSaveProps {
@@ -23,11 +24,14 @@ function withSave(): <P extends InjectedSaveProps>(
   WrappedComponent: ComponentType<P>,
 ) => ComponentClass<RequiredProps<P>> {
   return <P extends InjectedSaveProps>(WrappedComponent: ComponentType<P>): ComponentClass<RequiredProps<P>> =>
-    class WithSaveComponent extends Component<WithSaveType<P>, { data: string }> {
+    class WithSaveComponent extends Component<WithSaveType<P>, { data: string; dataLoaded: boolean }> {
+      saveData: string = null;
+
       constructor(props) {
         super(props);
         this.state = {
           data: null,
+          dataLoaded: false,
         };
       }
 
@@ -54,6 +58,7 @@ function withSave(): <P extends InjectedSaveProps>(
           if (data !== null) {
             this.setState({ data });
           }
+          this.setState({ dataLoaded: true });
         } catch (error) {
           Alert.alert('Error loading story data');
         }
@@ -62,16 +67,31 @@ function withSave(): <P extends InjectedSaveProps>(
       storeData = (): void => {
         const { id } = this.props;
         const { data } = this.state;
-        AsyncStorage.setItem(id, data);
+        if (this.saveData) {
+          AsyncStorage.setItem(id, this.saveData);
+        } else {
+          AsyncStorage.setItem(id, data);
+        }
       };
 
-      handleChange = (data): void => {
+      handleChange = (data: string): void => {
         this.setState({ data });
       };
 
+      setSaveData = (data: string): void => {
+        this.saveData = data;
+      };
+
       render(): JSX.Element {
-        const { data } = this.state;
-        return <WrappedComponent data={data} handleChange={this.handleChange} {...this.props} />;
+        const { data, dataLoaded } = this.state;
+        return dataLoaded ? (
+          <WrappedComponent
+            data={data}
+            handleChange={this.handleChange}
+            setSaveData={this.setSaveData}
+            {...this.props}
+          />
+        ) : null;
       }
     };
 }
