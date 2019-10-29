@@ -40,6 +40,8 @@ interface CardProps {
   name: string;
   number: number;
   upsideDown?: boolean;
+  /** The hue of the card, can be a value from 0 to 360 */
+  hue?: number;
 }
 
 interface CornerProps {
@@ -47,14 +49,25 @@ interface CornerProps {
   position: 'leftTop' | 'rightBottom';
 }
 
+const getCardColors = (hue: number): { borderWidth: number; borderColor: string; backgroundColor: string } => {
+  const borderColor = hue ? `hsl(${hue}, 50%, 35%)` : 'white';
+  const backgroundColor = hue ? `hsl(${hue}, 100%, 90%)` : 'white';
+  // Calculate the card color and border
+  return {
+    borderWidth: 2,
+    borderColor,
+    backgroundColor,
+  };
+};
+
 const Corner = ({ number, position }: CornerProps): JSX.Element => (
   <View style={[styles.corner, styles[position]]}>
     <Text style={styles.number}>{number}</Text>
   </View>
 );
 
-const Card = ({ name, number, upsideDown = false }: CardProps): JSX.Element => (
-  <View style={[styles.card, upsideDown && { transform: [{ rotateZ: '180deg' }] }]}>
+const Card = ({ name, number, upsideDown = false, hue }: CardProps): JSX.Element => (
+  <View style={[styles.card, getCardColors(hue), upsideDown && { transform: [{ rotateZ: '180deg' }] }]}>
     <Corner number={number} position="leftTop" />
     <Text style={styles.text}>{name}</Text>
     <Corner number={number} position="rightBottom" />
