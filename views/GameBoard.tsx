@@ -30,6 +30,7 @@ interface GameBoardState {
     left: number;
     top: number;
     hue: number;
+    upsideDown: boolean;
   }[];
 }
 
@@ -37,15 +38,18 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
   constructor(props) {
     super(props);
     let pos = 0;
+    let upsideDown = false;
     this.state = {
       deck: fantasyDeck.map(({ number, name }) => {
         pos += 1;
+        upsideDown = !upsideDown;
         return {
           name,
           number,
           left: pos,
           top: pos * 4,
           hue: pos * 7,
+          upsideDown,
         };
       }),
     };
@@ -70,8 +74,17 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
       <View style={styles.container}>
         <Text>Game Board</Text>
         <Separator />
-        {deck.map(({ name, number, left, top, hue }) => (
-          <Card key={number} left={left} top={top} name={name} number={number} hue={hue} focus={this.focusCard} />
+        {deck.map(({ name, number, left, top, hue, upsideDown }) => (
+          <Card
+            key={number}
+            left={left}
+            top={top}
+            name={name}
+            number={number}
+            hue={hue}
+            focus={this.focusCard}
+            upsideDown={upsideDown}
+          />
         ))}
       </View>
     );

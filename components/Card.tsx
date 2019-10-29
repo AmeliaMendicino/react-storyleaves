@@ -34,6 +34,12 @@ const styles = StyleSheet.create({
     height: 20,
     textAlign: 'center',
   },
+  upsideDown: { transform: [{ rotateZ: '180deg' }] },
+  upsideDownText: {
+    transform: [{ rotateZ: '180deg' }],
+    fontStyle: 'italic',
+    color: 'grey',
+  },
 });
 
 interface CardProps {
@@ -163,10 +169,11 @@ class Card extends PureComponent<CardProps> {
         ref={(card): void => {
           this.card = card;
         }}
-        style={[styles.card, getCardColors(hue), upsideDown && { transform: [{ rotateZ: '180deg' }] }]}
+        style={[styles.card, getCardColors(hue), upsideDown && styles.upsideDown]}
         {...this.panResponder.panHandlers}
       >
         <Corner number={number} position="leftTop" />
+        {upsideDown && <Text style={[styles.text, styles.upsideDownText]}>{name}</Text>}
         <Text style={styles.text}>{name}</Text>
         <Corner number={number} position="rightBottom" />
       </View>
