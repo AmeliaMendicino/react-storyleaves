@@ -44,6 +44,8 @@ interface CardProps {
   number: number;
   /** The hue of the card, can be a value from 1 to 360 */
   hue?: number;
+  /** An optional function the Card will call when it receives focus */
+  focus?: (number) => void;
 }
 
 interface CornerProps {
@@ -109,6 +111,11 @@ class Card extends PureComponent<CardProps> {
   };
 
   handlePanResponderGrant = (event, gestureState): void => {
+    const { number, focus } = this.props;
+    if (focus) {
+      focus(number);
+    }
+
     this.highlight();
   };
 
