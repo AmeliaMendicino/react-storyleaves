@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import Card from '../components/Card';
@@ -21,12 +21,14 @@ function Separator(): JSX.Element {
   return <View style={styles.separator} />;
 }
 
-export default function GameBoard(): JSX.Element {
-  return (
-    <View style={styles.container}>
-      <Text>Game Board</Text>
-      <Separator />
-      <Card name="Dragon" number={2} />
-    </View>
-  );
+export default class GameBoard extends PureComponent {
+  render(): JSX.Element {
+    return (
+      <View style={styles.container}>
+        <Text>Game Board</Text>
+        <Separator />
+        <Card left={100} top={100} name="Dragon" number={2} hue={1} />
+      </View>
+    );
+  }
 }
