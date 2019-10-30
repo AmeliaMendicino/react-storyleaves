@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { StyleSheet, View, Text, PanResponder } from 'react-native';
 
+import { CardType } from '../modules/cards';
+
 const styles = StyleSheet.create({
   card: {
     width: 100,
@@ -42,14 +44,7 @@ const styles = StyleSheet.create({
   },
 });
 
-interface CardProps {
-  left: number;
-  top: number;
-  upsideDown?: boolean;
-  name: string;
-  number: number;
-  /** The hue of the card, can be a value from 1 to 360 */
-  hue?: number;
+interface CardProps extends CardType {
   /** An optional function the Card will call when it receives focus */
   focus?: (number) => void;
 }
@@ -60,7 +55,7 @@ interface CornerProps {
 }
 
 const getCardColors = (hue: number): { borderWidth: number; borderColor: string; backgroundColor: string } => {
-  const borderColor = hue ? `hsl(${hue}, 50%, 35%)` : 'white';
+  const borderColor = hue ? `hsl(${hue}, 50%, 35%)` : 'black';
   const backgroundColor = hue ? `hsl(${hue}, 100%, 90%)` : 'white';
   // Calculate the card color and border
   return {
@@ -163,19 +158,23 @@ class Card extends PureComponent<CardProps> {
   });
 
   render(): JSX.Element {
-    const { name, number, upsideDown = false, hue } = this.props;
+    const { name, number, upsideDown = false, hue, flipped = false } = this.props;
     return (
       <View
         ref={(card): void => {
           this.card = card;
         }}
-        style={[styles.card, getCardColors(hue), upsideDown && styles.upsideDown]}
+        style={[styles.card, getCardColors(flipped ? null : hue), upsideDown && styles.upsideDown]}
         {...this.panResponder.panHandlers}
       >
-        <Corner number={number} position="leftTop" />
-        {upsideDown && <Text style={[styles.text, styles.upsideDownText]}>{name}</Text>}
-        <Text style={styles.text}>{name}</Text>
-        <Corner number={number} position="rightBottom" />
+        {!flipped && (
+          <>
+            <Corner number={number} position="leftTop" />
+            {upsideDown && <Text style={[styles.text, styles.upsideDownText]}>{name}</Text>}
+            <Text style={styles.text}>{name}</Text>
+            <Corner number={number} position="rightBottom" />
+          </>
+        )}
       </View>
     );
   }

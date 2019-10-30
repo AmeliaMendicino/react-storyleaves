@@ -1,11 +1,15 @@
-export interface CardType {
+export type CardType = {
   name: string;
   number: number;
   left: number;
   top: number;
+  /** The hue of the card, can be a value from 1 to 360 */
   hue: number;
+  /** If the text on the card is upsideDown */
   upsideDown?: boolean;
-}
+  /** If the whole card is flipped so that the back of the card is facing forward */
+  flipped?: boolean;
+};
 
 export type DeckType = CardType[];
 
@@ -26,7 +30,7 @@ function flipCard(): boolean {
  *
  * @todo Should we look into proper upside-down distribution in deck shuffling?
  * @param deck A deck of cards to shuffle
- * @return DeckType A copy of the deck with positions randomized and some cards flipped
+ * @return Deck A copy of the deck with positions randomized and some cards flipped
  */
 export function shuffleDeck(deck: DeckType): DeckType {
   const temp = [...deck];
@@ -59,6 +63,7 @@ export function loadDeck(cards): DeckType {
       left: 0,
       top: 0,
       hue,
+      flipped: true,
     };
   });
 

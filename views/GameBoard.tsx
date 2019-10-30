@@ -38,13 +38,16 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
   /**
    * When a card is focused, re-order the deck so that the focused
    * card is rendered on top of all of the other cards.
+   * Also flip it if it's not face-side up.
    *
    * @param number The number of the Card to draw on top of all other cards
    */
   focusCard = (number: number): void => {
     const { deck } = this.state;
+    const focusedCard = deck.find((card) => card.number === number);
+    focusedCard.flipped = false;
     this.setState({
-      deck: [...deck.filter((card) => card.number !== number), deck.find((card) => card.number === number)],
+      deck: [...deck.filter((card) => card.number !== number), focusedCard],
     });
   };
 
@@ -52,9 +55,9 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
     const { deck } = this.state;
     return (
       <View style={styles.container}>
-        <Text>Game Board</Text>
+        <Text>Storyleaves</Text>
         <Separator />
-        {deck.map(({ name, number, left, top, hue, upsideDown }) => (
+        {deck.map(({ name, number, left, top, hue, upsideDown, flipped }) => (
           <Card
             key={number}
             left={left}
@@ -64,6 +67,7 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
             hue={hue}
             focus={this.focusCard}
             upsideDown={upsideDown}
+            flipped={flipped}
           />
         ))}
       </View>
