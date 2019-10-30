@@ -39,4 +39,30 @@ export function shuffleDeck(deck: DeckType): DeckType {
   return temp;
 }
 
-export default { shuffleDeck };
+/**
+ * Takes a saved set of cards and loads it into a Deck, assigning colors
+ * based on type.
+ */
+export function loadDeck(cards): DeckType {
+  const colors = [];
+
+  const deck = cards.map(({ number, name, type }) => {
+    // Check if we already have the color for the type of card
+    if (!colors.includes(type)) {
+      colors.push(type);
+    }
+    // Determine the hue of the card based on type
+    const hue = 1 + colors.indexOf(type) * 30;
+    return {
+      name,
+      number,
+      left: 0,
+      top: 0,
+      hue,
+    };
+  });
+
+  return deck;
+}
+
+export default { shuffleDeck, loadDeck };
