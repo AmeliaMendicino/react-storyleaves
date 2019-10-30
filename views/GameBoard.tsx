@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import Card from '../components/Card';
 
+import { shuffleDeck, DeckType } from '../modules/cards';
 import fantasyDeck from '../constants/fantasyDeck';
 
 const styles = StyleSheet.create({
@@ -24,35 +25,26 @@ function Separator(): JSX.Element {
 }
 
 interface GameBoardState {
-  deck: {
-    name: string;
-    number: number;
-    left: number;
-    top: number;
-    hue: number;
-    upsideDown: boolean;
-  }[];
+  deck: DeckType;
 }
 
 export default class GameBoard extends PureComponent<{}, GameBoardState> {
   constructor(props) {
     super(props);
     let pos = 0;
-    let upsideDown = false;
-    this.state = {
-      deck: fantasyDeck.map(({ number, name }) => {
+    const deck = shuffleDeck(
+      fantasyDeck.map(({ number, name }) => {
         pos += 1;
-        upsideDown = !upsideDown;
         return {
           name,
           number,
-          left: pos,
-          top: pos * 4,
+          left: 100,
+          top: 100,
           hue: pos * 7,
-          upsideDown,
         };
       }),
-    };
+    );
+    this.state = { deck };
   }
 
   /**
