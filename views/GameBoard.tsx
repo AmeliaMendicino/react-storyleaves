@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, AsyncStorage, Alert, TouchableOpacity } from 'react-native';
 
 import Card from '../components/Card';
 
@@ -12,7 +12,7 @@ import {
   getReshuffleCard,
   calculateReshuffles,
 } from '../modules/cards';
-import { DOUBLE_PRESS_DELAY } from '../constants';
+import { DOUBLE_PRESS_DELAY, saveGameId } from '../constants';
 import fantasyDeck from '../constants/fantasyDeck';
 
 // TODO: calculate these or something...
@@ -44,11 +44,10 @@ function Separator(): JSX.Element {
 
 interface GameBoardState {
   deck: DeckType;
+  gameStarted: boolean;
 }
 
 export default class GameBoard extends PureComponent<{}, GameBoardState> {
-  gameStarted = false;
-
   lastCardTap = {
     number: null,
     time: null,
@@ -56,14 +55,56 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
 
   constructor(props) {
     super(props);
-    const deck = shuffleDeck(loadDeck(fantasyDeck, startLeft, startTop));
-    this.state = { deck };
+    this.state = { deck: [], gameStarted: false };
   }
+
+  componentDidMount(): void {
+    this.loadGame().then((state): void => {
+      if (state !== null) {
+        // Load the saved state into the GameBoard
+        this.setState(state);
+      } else {
+        // We don't have a saved game, so start a new one
+        this.newGame();
+      }
+    });
+  }
+
+  newGame = (): void => {
+    const deck = shuffleDeck(loadDeck(fantasyDeck, startLeft, startTop));
+    this.setState({ deck, gameStarted: false });
+  };
 
   reshuffle = (): void => {
     const { deck } = this.state;
     const newDeck = shuffleDeck(returnToDeck(deck, startLeft, startTop));
     this.setState({ deck: newDeck });
+  };
+
+  saveGame = (): void => {
+    AsyncStorage.setItem(saveGameId, JSON.stringify(this.state));
+  };
+
+  loadGame = async (): Promise<GameBoardState> => {
+    const saveData = await AsyncStorage.getItem(saveGameId);
+    return JSON.parse(saveData);
+  };
+
+  clearSave = (): void => {
+    AsyncStorage.removeItem(saveGameId);
+  };
+
+  newGamePrompt = (): void => {
+    Alert.alert('New Game?', 'Would you like to start a new game?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Yes',
+        onPress: (): void => {
+          this.clearSave();
+          this.newGame();
+        },
+      },
+    ]);
   };
 
   startGame = (): void => {
@@ -75,24 +116,8 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
       newDeck.push(getReshuffleCard(startLeft, startTop));
     }
 
-    this.gameStarted = true;
-    this.setState({ deck: shuffleDeck(newDeck) });
+    this.setState({ deck: shuffleDeck(newDeck), gameStarted: true });
   };
-
-  renderCard = ({ name, number, left, top, hue, upsideDown, flipped, marked }: CardType): JSX.Element => (
-    <Card
-      key={number}
-      left={left}
-      top={top}
-      name={name}
-      number={number}
-      hue={hue}
-      focus={this.focusCard}
-      upsideDown={upsideDown}
-      flipped={flipped}
-      marked={marked}
-    />
-  );
 
   /**
    * When a card is focused, re-order the deck so that the focused
@@ -102,7 +127,8 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
    * If a double tap is detected on the card, it will toggle if the card is marked.
    *
    * @param number The number of the Card to draw on top of all other cards
-   * @param position The current position of the Card
+   * @param left The current left position of the Card
+   * @param top The current top position of the Card
    */
   focusCard = (number: number, left: number, top: number): void => {
     const { deck } = this.state;
@@ -123,16 +149,43 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
     this.setState({ deck: [...deck.filter((card) => card.number !== number), focusedCard] });
   };
 
-  render(): JSX.Element {
+  moveEnd = (number: number, left: number, top: number): void => {
     const { deck } = this.state;
+    const focusedCard = deck.find((card) => card.number === number);
+    focusedCard.left = left;
+    focusedCard.top = top;
+    this.saveGame();
+  };
+
+  renderCard = ({ name, number, left, top, hue, upsideDown, flipped, marked }: CardType): JSX.Element => (
+    <Card
+      key={number}
+      left={left}
+      top={top}
+      name={name}
+      number={number}
+      hue={hue}
+      upsideDown={upsideDown}
+      flipped={flipped}
+      marked={marked}
+      focus={this.focusCard}
+      moveEnd={this.moveEnd}
+    />
+  );
+
+  render(): JSX.Element {
+    const { deck, gameStarted } = this.state;
     return (
       <View style={styles.container}>
         <Text>Storyleaves</Text>
         <Text>Double-Tap a card to mark it (*) so it stays on the board</Text>
+        <TouchableOpacity onLongPress={this.newGamePrompt}>
+          <Text>Long press here to restart game</Text>
+        </TouchableOpacity>
         <Separator />
         {deck.map(this.renderCard)}
         <View style={styles.startButton}>
-          {!this.gameStarted ? (
+          {!gameStarted ? (
             <Button title="Start Game" onPress={this.startGame} />
           ) : (
             <Button title="Reshuffle" onPress={this.reshuffle} />

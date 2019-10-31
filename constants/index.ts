@@ -1,5 +1,3 @@
-export const saveKey = '@Storyleaves:storyText';
+export const saveGameId = 'Storyleaves:GameBoard';
 
 export const DOUBLE_PRESS_DELAY = 300;
-
-export default { saveKey };

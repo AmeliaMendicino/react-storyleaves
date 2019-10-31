@@ -50,6 +50,8 @@ const styles = StyleSheet.create({
 interface CardProps extends CardType {
   /** An optional function the Card will call when it receives focus */
   focus?: (number: number, left: number, top: number) => void;
+  /** An optional function the Card will call when it has stopped moving */
+  moveEnd?: (number: number, left: number, top: number) => void;
 }
 
 interface CornerProps {
@@ -143,6 +145,11 @@ class Card extends PureComponent<CardProps> {
   };
 
   handlePanResponderEnd = (event, gestureState): void => {
+    const { number, moveEnd } = this.props;
+    if (moveEnd) {
+      moveEnd(number, this.cardStyles.style.left, this.cardStyles.style.top);
+    }
+
     this.unHighlight();
     this.previousLeft += gestureState.dx;
     this.previousTop += gestureState.dy;
