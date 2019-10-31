@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { StyleSheet, Text, View, Button, AsyncStorage, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Button, AsyncStorage, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 import Card from '../components/Card';
 
@@ -22,7 +22,7 @@ const startTop = 40;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'gray',
+    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -45,6 +45,7 @@ function Separator(): JSX.Element {
 interface GameBoardState {
   deck: DeckType;
   gameStarted: boolean;
+  loading: boolean;
 }
 
 export default class GameBoard extends PureComponent<{}, GameBoardState> {
@@ -55,7 +56,7 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
 
   constructor(props) {
     super(props);
-    this.state = { deck: [], gameStarted: false };
+    this.state = { deck: [], gameStarted: false, loading: true };
   }
 
   componentDidMount(): void {
@@ -67,6 +68,7 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
         // We don't have a saved game, so start a new one
         this.newGame();
       }
+      this.setState({ loading: false });
     });
   }
 
@@ -173,8 +175,19 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
     />
   );
 
+  loading = (): JSX.Element => (
+    <View style={styles.container}>
+      <ActivityIndicator size="large" />
+    </View>
+  );
+
   render(): JSX.Element {
-    const { deck, gameStarted } = this.state;
+    const { deck, gameStarted, loading } = this.state;
+
+    if (loading) {
+      return this.loading();
+    }
+
     return (
       <View style={styles.container}>
         <Text>Storyleaves</Text>
