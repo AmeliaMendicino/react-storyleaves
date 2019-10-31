@@ -77,12 +77,6 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
     this.setState({ deck, gameStarted: false });
   };
 
-  reshuffle = (): void => {
-    const { deck } = this.state;
-    const newDeck = shuffleDeck(returnToDeck(deck, startLeft, startTop));
-    this.setState({ deck: newDeck });
-  };
-
   saveGame = (): void => {
     AsyncStorage.setItem(saveGameId, JSON.stringify(this.state));
   };
@@ -111,14 +105,25 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
 
   startGame = (): void => {
     const { deck } = this.state;
-    const newDeck = returnToDeck(deck, startLeft, startTop);
+    const markedCards = deck.filter((card) => card.marked);
+    const unmarkedCards = deck.filter((card) => !card.marked);
 
-    const reshuffles = calculateReshuffles(newDeck.length);
+    const reshuffles = calculateReshuffles(deck.length);
     for (let i = 0; i < reshuffles; i += 1) {
-      newDeck.push(getReshuffleCard(startLeft, startTop));
+      unmarkedCards.push(getReshuffleCard(startLeft, startTop));
     }
 
-    this.setState({ deck: shuffleDeck(newDeck), gameStarted: true });
+    this.setState({
+      deck: [...shuffleDeck(returnToDeck(unmarkedCards, startLeft, startTop)), ...markedCards],
+      gameStarted: true,
+    });
+  };
+
+  reshuffle = (): void => {
+    const { deck } = this.state;
+    const markedCards = deck.filter((card) => card.marked);
+    const unmarkedCards = deck.filter((card) => !card.marked);
+    this.setState({ deck: [...shuffleDeck(returnToDeck(unmarkedCards, startLeft, startTop)), ...markedCards] });
   };
 
   /**
