@@ -1,10 +1,13 @@
+const RESHUFFLE_COUNT = 18;
+let reshuffleNumber = 0;
+
 export type CardType = {
   name: string;
   number: number;
   left: number;
   top: number;
   /** The hue of the card, can be a value from 1 to 360 */
-  hue: number;
+  hue: number | null;
   /** If the text on the card is upsideDown */
   upsideDown?: boolean;
   /** If the whole card is flipped so that the back of the card is facing forward */
@@ -62,10 +65,33 @@ export function returnToDeck(deck: DeckType, left: number, top: number): DeckTyp
 }
 
 /**
+ * Returns a Reshuffle card. Reshuffles have a null hue and a negative number.
+ */
+export function getReshuffleCard(left, top): CardType {
+  reshuffleNumber -= 1;
+  return {
+    name: 'Reshuffle',
+    number: reshuffleNumber,
+    left,
+    top,
+    hue: null,
+    flipped: true,
+  };
+}
+
+/**
+ * Returns the recommenced number of reshuffle cards based on the number of cards in a deck.
+ * About one per every 18.
+ */
+export function calculateReshuffles(cardCount: number): number {
+  return Math.floor(cardCount / RESHUFFLE_COUNT);
+}
+
+/**
  * Takes a saved set of cards and loads it into a Deck, assigning colors
  * based on type.
  */
-export function loadDeck(cards): DeckType {
+export function loadDeck(cards, left, top): DeckType {
   const colors = [];
 
   const deck = cards.map(({ number, name, type }) => {
@@ -78,8 +104,8 @@ export function loadDeck(cards): DeckType {
     return {
       name,
       number,
-      left: 20,
-      top: 40,
+      left,
+      top,
       hue,
       flipped: true,
     };

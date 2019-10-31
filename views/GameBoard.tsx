@@ -3,9 +3,21 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 
 import Card from '../components/Card';
 
-import { DeckType, CardType, shuffleDeck, loadDeck, returnToDeck } from '../modules/cards';
+import {
+  DeckType,
+  CardType,
+  shuffleDeck,
+  loadDeck,
+  returnToDeck,
+  getReshuffleCard,
+  calculateReshuffles,
+} from '../modules/cards';
 import { DOUBLE_PRESS_DELAY } from '../constants';
 import fantasyDeck from '../constants/fantasyDeck';
+
+// TODO: calculate these or something...
+const startLeft = 20;
+const startTop = 40;
 
 const styles = StyleSheet.create({
   container: {
@@ -35,6 +47,8 @@ interface GameBoardState {
 }
 
 export default class GameBoard extends PureComponent<{}, GameBoardState> {
+  gameStarted = false;
+
   lastCardTap = {
     number: null,
     time: null,
@@ -42,13 +56,27 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
 
   constructor(props) {
     super(props);
-    const deck = shuffleDeck(loadDeck(fantasyDeck));
+    const deck = shuffleDeck(loadDeck(fantasyDeck, startLeft, startTop));
     this.state = { deck };
   }
 
+  reshuffle = (): void => {
+    const { deck } = this.state;
+    const newDeck = shuffleDeck(returnToDeck(deck, startLeft, startTop));
+    this.setState({ deck: newDeck });
+  };
+
   startGame = (): void => {
     const { deck } = this.state;
-    this.setState({ deck: shuffleDeck(returnToDeck(deck, 20, 40)) });
+    const newDeck = returnToDeck(deck, startLeft, startTop);
+
+    const reshuffles = calculateReshuffles(newDeck.length);
+    for (let i = 0; i < reshuffles; i += 1) {
+      newDeck.push(getReshuffleCard(startLeft, startTop));
+    }
+
+    this.gameStarted = true;
+    this.setState({ deck: shuffleDeck(newDeck) });
   };
 
   renderCard = ({ name, number, left, top, hue, upsideDown, flipped, marked }: CardType): JSX.Element => (
@@ -100,10 +128,15 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
     return (
       <View style={styles.container}>
         <Text>Storyleaves</Text>
+        <Text>Double-Tap a card to mark it (*) so it stays on the board</Text>
         <Separator />
         {deck.map(this.renderCard)}
         <View style={styles.startButton}>
-          <Button title="Start Game" onPress={this.startGame} />
+          {!this.gameStarted ? (
+            <Button title="Start Game" onPress={this.startGame} />
+          ) : (
+            <Button title="Reshuffle" onPress={this.reshuffle} />
+          )}
         </View>
       </View>
     );
