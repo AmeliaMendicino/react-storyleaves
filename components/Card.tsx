@@ -104,6 +104,19 @@ class Card extends PureComponent<CardProps> {
     this.updateNativeStyles();
   }
 
+  componentDidUpdate(): void {
+    const { left, top } = this.props;
+    this.previousLeft = left;
+    this.previousTop = top;
+    this.cardStyles = {
+      style: {
+        left: this.previousLeft,
+        top: this.previousTop,
+      },
+    };
+    this.updateNativeStyles();
+  }
+
   handleStartShouldSetPanResponder = (event, gestureState): boolean => {
     // Should we become active when the user presses down on the card?
     return true;
@@ -170,7 +183,7 @@ class Card extends PureComponent<CardProps> {
         style={[styles.card, getCardColors(flipped ? null : hue)]}
         {...this.panResponder.panHandlers}
       >
-        {!flipped && (
+        {!flipped ? (
           <>
             <Corner text={number} position="leftTop" />
             {marked && <Corner text="*" position="rightTop" />}
@@ -178,6 +191,8 @@ class Card extends PureComponent<CardProps> {
             {upsideDown && <Text style={[styles.text, styles.upsideDownText]}>{name}</Text>}
             <Corner text={number} position="rightBottom" />
           </>
+        ) : (
+          <Text style={styles.text}>Storyleaves</Text>
         )}
       </View>
     );

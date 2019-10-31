@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 
 import Card from '../components/Card';
 
-import { DeckType, CardType, shuffleDeck, loadDeck } from '../modules/cards';
+import { DeckType, CardType, shuffleDeck, loadDeck, returnToDeck } from '../modules/cards';
 import { DOUBLE_PRESS_DELAY } from '../constants';
 import fantasyDeck from '../constants/fantasyDeck';
 
@@ -18,6 +18,11 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderBottomColor: '#737373',
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  startButton: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
   },
 });
 
@@ -40,6 +45,11 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
     const deck = shuffleDeck(loadDeck(fantasyDeck));
     this.state = { deck };
   }
+
+  startGame = (): void => {
+    const { deck } = this.state;
+    this.setState({ deck: shuffleDeck(returnToDeck(deck, 20, 40)) });
+  };
 
   renderCard = ({ name, number, left, top, hue, upsideDown, flipped, marked }: CardType): JSX.Element => (
     <Card
@@ -92,6 +102,9 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
         <Text>Storyleaves</Text>
         <Separator />
         {deck.map(this.renderCard)}
+        <View style={styles.startButton}>
+          <Button title="Start Game" onPress={this.startGame} />
+        </View>
       </View>
     );
   }

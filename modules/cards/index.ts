@@ -39,10 +39,26 @@ export function shuffleDeck(deck: DeckType): DeckType {
 
   for (let i = temp.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
-    temp[i].upsideDown = flipCard();
+    if (!temp[i].marked) {
+      temp[i].upsideDown = flipCard();
+    }
     [temp[i], temp[j]] = [temp[j], temp[i]];
   }
   return temp;
+}
+
+/**
+ * Returns a new deck with all cards to the specified position
+ * and flips them face-side down, except for marked cards.
+ */
+export function returnToDeck(deck: DeckType, left: number, top: number): DeckType {
+  const newDeck = deck.map((card) => {
+    if (!card.marked) {
+      return { ...card, flipped: true, left, top };
+    }
+    return card;
+  });
+  return newDeck;
 }
 
 /**
