@@ -27,18 +27,21 @@ const styles = StyleSheet.create({
     top: 2,
     left: 2,
   },
+  rightTop: {
+    top: 2,
+    right: 2,
+  },
   rightBottom: {
     bottom: 2,
     right: 2,
     transform: [{ rotateZ: '180deg' }],
   },
-  number: {
+  cornerText: {
     height: 20,
     textAlign: 'center',
   },
   upsideDown: { transform: [{ rotateZ: '180deg' }] },
   upsideDownText: {
-    transform: [{ rotateZ: '180deg' }],
     fontStyle: 'italic',
     color: 'grey',
   },
@@ -46,12 +49,12 @@ const styles = StyleSheet.create({
 
 interface CardProps extends CardType {
   /** An optional function the Card will call when it receives focus */
-  focus?: (number) => void;
+  focus?: (number: number, left: number, top: number) => void;
 }
 
 interface CornerProps {
-  number: number;
-  position: 'leftTop' | 'rightBottom';
+  text: number | string;
+  position: 'leftTop' | 'rightBottom' | 'rightTop';
 }
 
 const getCardColors = (hue: number): { borderWidth: number; borderColor: string; backgroundColor: string } => {
@@ -65,9 +68,9 @@ const getCardColors = (hue: number): { borderWidth: number; borderColor: string;
   };
 };
 
-const Corner = ({ number, position }: CornerProps): JSX.Element => (
+const Corner = ({ text, position }: CornerProps): JSX.Element => (
   <View style={[styles.corner, styles[position]]}>
-    <Text style={styles.number}>{number}</Text>
+    <Text style={styles.cornerText}>{text}</Text>
   </View>
 );
 
@@ -114,7 +117,7 @@ class Card extends PureComponent<CardProps> {
   handlePanResponderGrant = (event, gestureState): void => {
     const { number, focus } = this.props;
     if (focus) {
-      focus(number);
+      focus(number, this.cardStyles.style.left, this.cardStyles.style.top);
     }
 
     this.highlight();
@@ -158,21 +161,22 @@ class Card extends PureComponent<CardProps> {
   });
 
   render(): JSX.Element {
-    const { name, number, upsideDown = false, hue, flipped = false } = this.props;
+    const { name, number, upsideDown = false, hue, flipped = false, marked = false } = this.props;
     return (
       <View
         ref={(card): void => {
           this.card = card;
         }}
-        style={[styles.card, getCardColors(flipped ? null : hue), upsideDown && styles.upsideDown]}
+        style={[styles.card, getCardColors(flipped ? null : hue)]}
         {...this.panResponder.panHandlers}
       >
         {!flipped && (
           <>
-            <Corner number={number} position="leftTop" />
+            <Corner text={number} position="leftTop" />
+            {marked && <Corner text="*" position="rightTop" />}
+            <Text style={[styles.text, upsideDown && styles.upsideDown]}>{name}</Text>
             {upsideDown && <Text style={[styles.text, styles.upsideDownText]}>{name}</Text>}
-            <Text style={styles.text}>{name}</Text>
-            <Corner number={number} position="rightBottom" />
+            <Corner text={number} position="rightBottom" />
           </>
         )}
       </View>

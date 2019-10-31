@@ -3,7 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import Card from '../components/Card';
 
-import { DeckType, shuffleDeck, loadDeck } from '../modules/cards';
+import { DeckType, CardType, shuffleDeck, loadDeck } from '../modules/cards';
+import { DOUBLE_PRESS_DELAY } from '../constants';
 import fantasyDeck from '../constants/fantasyDeck';
 
 const styles = StyleSheet.create({
@@ -29,26 +30,59 @@ interface GameBoardState {
 }
 
 export default class GameBoard extends PureComponent<{}, GameBoardState> {
+  lastCardTap = {
+    number: null,
+    time: null,
+  };
+
   constructor(props) {
     super(props);
     const deck = shuffleDeck(loadDeck(fantasyDeck));
     this.state = { deck };
   }
 
+  renderCard = ({ name, number, left, top, hue, upsideDown, flipped, marked }: CardType): JSX.Element => (
+    <Card
+      key={number}
+      left={left}
+      top={top}
+      name={name}
+      number={number}
+      hue={hue}
+      focus={this.focusCard}
+      upsideDown={upsideDown}
+      flipped={flipped}
+      marked={marked}
+    />
+  );
+
   /**
    * When a card is focused, re-order the deck so that the focused
    * card is rendered on top of all of the other cards.
    * Also flip it if it's not face-side up.
    *
+   * If a double tap is detected on the card, it will toggle if the card is marked.
+   *
    * @param number The number of the Card to draw on top of all other cards
+   * @param position The current position of the Card
    */
-  focusCard = (number: number): void => {
+  focusCard = (number: number, left: number, top: number): void => {
     const { deck } = this.state;
+    const now = Date.now();
+    const doubleTapped = this.lastCardTap.number === number && now - this.lastCardTap.time < DOUBLE_PRESS_DELAY;
+
     const focusedCard = deck.find((card) => card.number === number);
     focusedCard.flipped = false;
-    this.setState({
-      deck: [...deck.filter((card) => card.number !== number), focusedCard],
-    });
+    focusedCard.left = left;
+    focusedCard.top = top;
+
+    if (doubleTapped) {
+      focusedCard.marked = !focusedCard.marked;
+    } else {
+      this.lastCardTap = { number, time: now };
+    }
+
+    this.setState({ deck: [...deck.filter((card) => card.number !== number), focusedCard] });
   };
 
   render(): JSX.Element {
@@ -57,19 +91,7 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
       <View style={styles.container}>
         <Text>Storyleaves</Text>
         <Separator />
-        {deck.map(({ name, number, left, top, hue, upsideDown, flipped }) => (
-          <Card
-            key={number}
-            left={left}
-            top={top}
-            name={name}
-            number={number}
-            hue={hue}
-            focus={this.focusCard}
-            upsideDown={upsideDown}
-            flipped={flipped}
-          />
-        ))}
+        {deck.map(this.renderCard)}
       </View>
     );
   }

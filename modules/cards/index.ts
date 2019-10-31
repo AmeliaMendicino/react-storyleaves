@@ -9,6 +9,8 @@ export type CardType = {
   upsideDown?: boolean;
   /** If the whole card is flipped so that the back of the card is facing forward */
   flipped?: boolean;
+  /** Indicates that the card is marked for a special purpose */
+  marked?: boolean;
 };
 
 export type DeckType = CardType[];
@@ -60,8 +62,8 @@ export function loadDeck(cards): DeckType {
     return {
       name,
       number,
-      left: 0,
-      top: 0,
+      left: 20,
+      top: 40,
       hue,
       flipped: true,
     };
