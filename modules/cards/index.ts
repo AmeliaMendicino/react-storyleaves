@@ -51,20 +51,6 @@ export function shuffleDeck(deck: DeckType): DeckType {
 }
 
 /**
- * Returns a new deck with all cards to the specified position
- * and flips them face-side down, except for marked cards.
- */
-export function returnToDeck(deck: DeckType, left: number, top: number): DeckType {
-  const newDeck = deck.map((card) => {
-    if (!card.marked) {
-      return { ...card, flipped: true, left, top };
-    }
-    return card;
-  });
-  return newDeck;
-}
-
-/**
  * Returns a Reshuffle card. Reshuffles have a null hue and a negative number.
  */
 export function getReshuffleCard(left, top): CardType {

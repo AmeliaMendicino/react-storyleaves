@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { StyleSheet, View, Text, PanResponder } from 'react-native';
+import { StyleSheet, View, Text, PanResponder, Animated } from 'react-native';
 
 import { CardType } from '../modules/cards';
 
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
 
 interface CardProps extends CardType {
   /** An optional function the Card will call when it receives focus */
-  focus?: (number: number, left: number, top: number) => void;
+  focus?: (number: number) => void;
   /** An optional function the Card will call when it has stopped moving */
   moveEnd?: (number: number, left: number, top: number) => void;
 }
@@ -77,46 +77,23 @@ const Corner = ({ text, position }: CornerProps): JSX.Element => (
 );
 
 class Card extends PureComponent<CardProps> {
-  cardStyles = {
-    style: {
-      left: 0,
-      top: 0,
-    },
-  };
+  animating = false;
 
-  card: View = null;
+  moveAnimation = new Animated.ValueXY();
 
-  previousLeft = 0;
-
-  previousTop = 0;
+  animationListener = null;
 
   constructor(props) {
     super(props);
-    this.previousLeft = props.left;
-    this.previousTop = props.top;
-    this.cardStyles = {
-      style: {
-        left: this.previousLeft,
-        top: this.previousTop,
-      },
-    };
+
+    this.moveAnimation = new Animated.ValueXY({ x: props.left, y: props.top });
   }
 
-  componentDidMount(): void {
-    this.updateNativeStyles();
-  }
-
-  componentDidUpdate(): void {
+  componentDidUpdate(prevProps): void {
     const { left, top } = this.props;
-    this.previousLeft = left;
-    this.previousTop = top;
-    this.cardStyles = {
-      style: {
-        left: this.previousLeft,
-        top: this.previousTop,
-      },
-    };
-    this.updateNativeStyles();
+    if (!this.animating && (left !== prevProps.left || top !== prevProps.top)) {
+      this.moveCard(left, top);
+    }
   }
 
   handleStartShouldSetPanResponder = (event, gestureState): boolean => {
@@ -131,42 +108,25 @@ class Card extends PureComponent<CardProps> {
 
   handlePanResponderGrant = (event, gestureState): void => {
     const { number, focus } = this.props;
+    this.moveAnimation.extractOffset();
     if (focus) {
-      focus(number, this.cardStyles.style.left, this.cardStyles.style.top);
+      focus(number);
     }
-
-    this.highlight();
   };
 
   handlePanResponderMove = (event, gestureState): void => {
-    this.cardStyles.style.left = this.previousLeft + gestureState.dx;
-    this.cardStyles.style.top = this.previousTop + gestureState.dy;
-    this.updateNativeStyles();
+    Animated.event([null, { dx: this.moveAnimation.x, dy: this.moveAnimation.y }])(event, gestureState);
   };
 
   handlePanResponderEnd = (event, gestureState): void => {
     const { number, moveEnd } = this.props;
+    this.moveAnimation.flattenOffset();
     if (moveEnd) {
-      moveEnd(number, this.cardStyles.style.left, this.cardStyles.style.top);
-    }
-
-    this.unHighlight();
-    this.previousLeft += gestureState.dx;
-    this.previousTop += gestureState.dy;
-  };
-
-  highlight = (): void => {
-    this.updateNativeStyles();
-  };
-
-  unHighlight = (): void => {
-    // We can change the color or opacity here for when the card is un-selected...
-    this.updateNativeStyles();
-  };
-
-  updateNativeStyles = (): void => {
-    if (this.card) {
-      this.card.setNativeProps(this.cardStyles);
+      const {
+        left: { _value: leftVal },
+        top: { _value: topVal },
+      } = this.moveAnimation.getLayout();
+      moveEnd(number, leftVal, topVal);
     }
   };
 
@@ -180,14 +140,19 @@ class Card extends PureComponent<CardProps> {
     onPanResponderTerminate: this.handlePanResponderEnd,
   });
 
+  moveCard = (left, top): void => {
+    this.animating = true;
+    this.moveAnimation.flattenOffset();
+    Animated.spring(this.moveAnimation, { toValue: { x: left, y: top } }).start(() => {
+      this.animating = false;
+    });
+  };
+
   render(): JSX.Element {
     const { name, number, upsideDown = false, hue, flipped = false, marked = false } = this.props;
     return (
-      <View
-        ref={(card): void => {
-          this.card = card;
-        }}
-        style={[styles.card, getCardColors(flipped ? null : hue)]}
+      <Animated.View
+        style={[styles.card, getCardColors(flipped ? null : hue), this.moveAnimation.getLayout()]}
         {...this.panResponder.panHandlers}
       >
         {!flipped ? (
@@ -201,7 +166,7 @@ class Card extends PureComponent<CardProps> {
         ) : (
           <Text style={styles.text}>Storyleaves</Text>
         )}
-      </View>
+      </Animated.View>
     );
   }
 }

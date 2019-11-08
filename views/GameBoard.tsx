@@ -3,15 +3,7 @@ import { StyleSheet, Text, View, Button, AsyncStorage, Alert, TouchableOpacity, 
 
 import Card from '../components/Card';
 
-import {
-  DeckType,
-  CardType,
-  shuffleDeck,
-  loadDeck,
-  returnToDeck,
-  getReshuffleCard,
-  calculateReshuffles,
-} from '../modules/cards';
+import { DeckType, CardType, shuffleDeck, loadDeck, getReshuffleCard, calculateReshuffles } from '../modules/cards';
 import { DOUBLE_PRESS_DELAY, saveGameId } from '../constants';
 import fantasyDeck from '../constants/fantasyDeck';
 
@@ -106,24 +98,45 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
   startGame = (): void => {
     const { deck } = this.state;
     const markedCards = deck.filter((card) => card.marked);
-    const unmarkedCards = deck.filter((card) => !card.marked);
+    const unmarkedCards = deck
+      .filter((card) => !card.marked)
+      .map(
+        (card): CardType => ({
+          ...card,
+          left: startLeft,
+          top: startTop,
+          flipped: true,
+        }),
+      );
 
     const reshuffles = calculateReshuffles(deck.length);
     for (let i = 0; i < reshuffles; i += 1) {
       unmarkedCards.push(getReshuffleCard(startLeft, startTop));
     }
 
-    this.setState({
-      deck: [...shuffleDeck(returnToDeck(unmarkedCards, startLeft, startTop)), ...markedCards],
-      gameStarted: true,
-    });
+    this.setState(
+      {
+        deck: [...shuffleDeck(unmarkedCards), ...markedCards],
+        gameStarted: true,
+      },
+      this.saveGame,
+    );
   };
 
   reshuffle = (): void => {
     const { deck } = this.state;
     const markedCards = deck.filter((card) => card.marked);
-    const unmarkedCards = deck.filter((card) => !card.marked);
-    this.setState({ deck: [...shuffleDeck(returnToDeck(unmarkedCards, startLeft, startTop)), ...markedCards] });
+    const unmarkedCards = deck
+      .filter((card) => !card.marked)
+      .map(
+        (card): CardType => ({
+          ...card,
+          left: startLeft,
+          top: startTop,
+          flipped: true,
+        }),
+      );
+    this.setState({ deck: [...shuffleDeck(unmarkedCards), ...markedCards] }, this.saveGame);
   };
 
   /**
@@ -134,18 +147,16 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
    * If a double tap is detected on the card, it will toggle if the card is marked.
    *
    * @param number The number of the Card to draw on top of all other cards
-   * @param left The current left position of the Card
-   * @param top The current top position of the Card
    */
-  focusCard = (number: number, left: number, top: number): void => {
+  focusCard = (number: number): void => {
     const { deck } = this.state;
     const now = Date.now();
     const doubleTapped = this.lastCardTap.number === number && now - this.lastCardTap.time < DOUBLE_PRESS_DELAY;
 
-    const focusedCard = deck.find((card) => card.number === number);
-    focusedCard.flipped = false;
-    focusedCard.left = left;
-    focusedCard.top = top;
+    const focusedCard = {
+      ...deck.find((card) => card.number === number),
+      flipped: false,
+    };
 
     if (doubleTapped) {
       focusedCard.marked = !focusedCard.marked;
@@ -158,10 +169,12 @@ export default class GameBoard extends PureComponent<{}, GameBoardState> {
 
   moveEnd = (number: number, left: number, top: number): void => {
     const { deck } = this.state;
-    const focusedCard = deck.find((card) => card.number === number);
-    focusedCard.left = left;
-    focusedCard.top = top;
-    this.saveGame();
+    const focusedCard = {
+      ...deck.find((card) => card.number === number),
+      left,
+      top,
+    };
+    this.setState({ deck: [...deck.filter((card) => card.number !== number), focusedCard] }, this.saveGame);
   };
 
   renderCard = ({ name, number, left, top, hue, upsideDown, flipped, marked }: CardType): JSX.Element => (
