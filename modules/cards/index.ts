@@ -1,10 +1,15 @@
 const RESHUFFLE_COUNT = 18;
+/** A counter for reshuffle cards so they can have a unique id */
 let reshuffleNumber = 0;
 
 export type CardType = {
+  /** The text of the card */
   name: string;
+  /** The card's unique number */
   number: number;
+  /** The card's coordinate relative to the left of the screen */
   left: number;
+  /** The card's coordinate relative to the top of the screen */
   top: number;
   /** The hue of the card, can be a value from 1 to 360 */
   hue: number | null;
@@ -51,7 +56,8 @@ export function shuffleDeck(deck: DeckType): DeckType {
 }
 
 /**
- * Returns a Reshuffle card. Reshuffles have a null hue and a negative number.
+ * Returns a Reshuffle card.
+ * Reshuffles have a null hue and a unique (if somewhat arbitrary...) negative number.
  */
 export function getReshuffleCard(left, top): CardType {
   reshuffleNumber -= 1;
@@ -99,5 +105,3 @@ export function loadDeck(cards, left, top): DeckType {
 
   return deck;
 }
-
-export default { shuffleDeck, loadDeck };

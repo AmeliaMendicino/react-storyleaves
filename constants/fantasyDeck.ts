@@ -1,3 +1,6 @@
+/**
+ * A generic fantasy deck for fairy tales and adventures.
+ */
 const fantasyDeck = [
   { number: 1, name: 'Wizard', type: 'Character' },
   { number: 2, name: 'Dragon', type: 'Character' },
@@ -41,4 +44,10 @@ const fantasyDeck = [
   { number: 40, name: 'The Stars', type: 'Detail' },
 ];
 
-export default fantasyDeck;
+const deckMeta = {
+  name: 'Fantasy Deck',
+  description: 'A generic fantasy deck for fairy tales and adventures.',
+  cards: fantasyDeck,
+};
+
+export default deckMeta;
