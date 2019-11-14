@@ -5,8 +5,8 @@ import { CardType } from '../modules/cards';
 
 const styles = StyleSheet.create({
   card: {
-    width: 100,
-    height: 142,
+    width: 110,
+    height: 100,
     backgroundColor: 'white',
     borderRadius: 12,
     position: 'absolute',
