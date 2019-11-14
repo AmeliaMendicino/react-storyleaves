@@ -59,6 +59,23 @@ interface CornerProps {
   position: 'leftTop' | 'rightBottom' | 'rightTop';
 }
 
+/**
+ * A helper component for displaying text in corners of cards
+ */
+const Corner = ({ text, position }: CornerProps): JSX.Element => (
+  <View style={[styles.corner, styles[position]]}>
+    <Text style={styles.cornerText}>{text}</Text>
+  </View>
+);
+
+/**
+ * A helper function that takes a hue number and will return
+ * a set of styles for the card's background and border, where the
+ * background is a light version of the hue and the border is a dark version of it.
+ *
+ * @param hue A value between 1 and 360, e.g., 1 = red, 30 = orange, 60 = yellow, etc.
+ *        If 0 or null is passed in, it will default to a white background and black border.
+ */
 const getCardColors = (hue: number): { borderWidth: number; borderColor: string; backgroundColor: string } => {
   const borderColor = hue ? `hsl(${hue}, 50%, 35%)` : 'black';
   const backgroundColor = hue ? `hsl(${hue}, 100%, 90%)` : 'white';
@@ -70,18 +87,17 @@ const getCardColors = (hue: number): { borderWidth: number; borderColor: string;
   };
 };
 
-const Corner = ({ text, position }: CornerProps): JSX.Element => (
-  <View style={[styles.corner, styles[position]]}>
-    <Text style={styles.cornerText}>{text}</Text>
-  </View>
-);
-
+/**
+ * A Card Component that will render at the specified position and
+ * can be dragged around. Will animate to new coordinates if the position props change.
+ *
+ * @todo We're currently using left = x and top = y. If we're in a View that doesn't
+ * take up the whole screen, is it going to do weird relative stuff?
+ * Should we change it to take x and y instead of top and left?
+ */
 class Card extends PureComponent<CardProps> {
-  animating = false;
-
+  /** The 2D Value that drives the animations, such as pan gestures */
   moveAnimation = new Animated.ValueXY();
-
-  animationListener = null;
 
   constructor(props) {
     super(props);
@@ -91,38 +107,48 @@ class Card extends PureComponent<CardProps> {
 
   componentDidUpdate(prevProps): void {
     const { left, top } = this.props;
-    if (!this.animating && (left !== prevProps.left || top !== prevProps.top)) {
+    // Check if the passed in coordinates have changed and animate to the new position
+    if (left !== prevProps.left || top !== prevProps.top) {
       this.moveCard(left, top);
     }
   }
 
   handleStartShouldSetPanResponder = (event, gestureState): boolean => {
-    // Should we become active when the user presses down on the card?
+    // Become active when the user presses down on the card
     return true;
   };
 
   handleMoveShouldSetPanResponder = (event, gestureState): boolean => {
-    // Should we become active when the user moves a touch over the card?
+    // Become active when the user moves a touch over the card
     return true;
   };
 
   handlePanResponderGrant = (event, gestureState): void => {
+    // The gesture has has started and the gestureState.d{x,y} will be set to zero now
     const { number, focus } = this.props;
+    // Set the animation offset to the base value {x,y} and the base value to zero so we can directly map to the gestureState
     this.moveAnimation.extractOffset();
+    // If a focus function has been specified, call it, usually so we can render this card on top of others
     if (focus) {
       focus(number);
     }
   };
 
   handlePanResponderMove = (event, gestureState): void => {
+    // Map the gestureState's accumulated distance since becoming responder to the animation's x and y
     Animated.event([null, { dx: this.moveAnimation.x, dy: this.moveAnimation.y }])(event, gestureState);
   };
 
   handlePanResponderEnd = (event, gestureState): void => {
     const { number, moveEnd } = this.props;
+    // Merge the animation offset value into the base value and reset the offset to zero to mark the end of the animation
     this.moveAnimation.flattenOffset();
     if (moveEnd) {
+      // Capture the final location of the card and pass it to the moveEnd function
       const {
+        // It feels super hacky to be grabbing the raw _value numbers,
+        // but if we use the Animated.Value objects it causes an infinite render loop and crashes the application since
+        // the React shallow prop compare sees them as different objects when they're passed back into the Card props by the parent
         left: { _value: leftVal },
         top: { _value: topVal },
       } = this.moveAnimation.getLayout();
@@ -140,12 +166,11 @@ class Card extends PureComponent<CardProps> {
     onPanResponderTerminate: this.handlePanResponderEnd,
   });
 
+  /**
+   * Animates the card to the specified position
+   */
   moveCard = (left, top): void => {
-    this.animating = true;
-    this.moveAnimation.flattenOffset();
-    Animated.spring(this.moveAnimation, { toValue: { x: left, y: top } }).start(() => {
-      this.animating = false;
-    });
+    Animated.spring(this.moveAnimation, { toValue: { x: left, y: top } }).start();
   };
 
   render(): JSX.Element {
